@@ -4,8 +4,6 @@ import { deleteUserController } from "../controllers/deleteUserController";
 
 export const router = express.Router();
 
-
-
 router.post('/createusers',createUserController);
 router.post("/updateuser",updateUserController);
 router.post("/retriveuser",retrievedUserDetailController);
