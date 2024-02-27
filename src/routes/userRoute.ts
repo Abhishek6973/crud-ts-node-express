@@ -8,5 +8,5 @@ export const router = express.Router();
 router.post('/createusers',createUserController);
 router.post('/loginUser', userLoginController);
 router.post("/updateuser",protectedRoute,updateUserController);
-router.post("/retriveuser",protectedRoute,retrievedUserDetailController);
+router.get("/retriveuser",protectedRoute,retrievedUserDetailController);
 router.post("/deleteuser",protectedRoute,deleteUserController);

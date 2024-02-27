@@ -2,7 +2,6 @@ import express from 'express';
 
 import { router } from "./routes/userRoute";
 import {connectiondb} from "./config/dbconnect"
-import { protectedRoute } from './middlewares/auth';
 
 
 

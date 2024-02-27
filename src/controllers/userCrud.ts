@@ -1,77 +1,86 @@
 import { Request, Response } from "express";
-import {createUser, retrieveUser, updateToken, updateUser} from "../Daos/userDao"
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv';
-import bycrpt from 'bcrypt'
+import {
+  createUser,
+  retrieveUser,
+  updateToken,
+  updateUser,
+} from "../Daos/userDao";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import bycrpt from "bcrypt";
 
 dotenv.config();
 
-const createToken =  (email: string): string => {
-    const secretToken = process.env.SECRET_KEY;
-    if (!secretToken) {
-        throw new Error('Secret token not found in environment variables');
-    }
-    const token = jwt.sign({ email }, secretToken, { expiresIn: '1h' });
-    return token;
+const createToken = (email: string): string => {
+  const secretToken = process.env.SECRET_KEY;
+  if (!secretToken) {
+    throw new Error("Secret token not found in environment variables");
+  }
+  const token = jwt.sign({ email }, secretToken, { expiresIn: "1h" });
+  return token;
 };
-
 
 export const createUserController = async (req: Request, res: Response) => {
     try {
-        const { name, email, avatar, password} = req.body;
-        console.log(name, email, avatar, password);
-        
-        const hashedpassword:string = await bycrpt.hash(password, 2)
+    const { name, email, avatar, password } = req.body;
+    console.log(name, email, avatar, password);
 
-        const token: string = createToken(email);
-        await createUser(name, email, avatar, token, hashedpassword);
+    const hashedpassword: string = await bycrpt.hash(password, 2);
 
-        console.log("User created successfully");
+    const token: string = createToken(email);
+    await createUser(name, email, avatar, token, hashedpassword);
 
-        return res.status(200).json({"access token":token});
-    } catch (error) {
-        console.error("Error creating user:", error);
-        return res.status(500).json({ "error": "An error occurred while creating the user" });
-    }
+    console.log("User created successfully");
+
+    res.status(200).json({ "access token": token });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: "An error occurred while creating the user" });
+  }
 };
 
-export const userLoginController = async (req:Request, res: Response) =>{
-        const{email, password} = req.body;
-        const user = await retrieveUser(email);
-        if(!user)
-            return res.status(401).json({"msg":"not found"})
-        const comparepass:boolean = await bycrpt.compare(password, user.password)
+export const userLoginController = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const user = await retrieveUser(email);
+  if (!user) return res.status(401).json({ msg: "not found" });
+  const comparepass: boolean = await bycrpt.compare(password, user.password);
 
-        if (!comparepass)
-            return res.status(401).json({"msg":"incorrect credentials"})
-        const token: string = createToken(email);
-        await updateToken(email, token);
-        return res.status(200).json({ "access_token": token });
-
-}
-
-export const updateUserController = async (req: Request, res: Response) =>{
-    try {
-        const {name, email, avatar, new_password} = req.body;
-        await updateUser(email,name,avatar, new_password);
-        console.log("updated")
-        return res.json({"status": "success"})
-        } catch (error) {
-            return res.status(404).json({"details":"send full details"})
-        }
+  if (!comparepass)
+    return res.status(401).json({ msg: "incorrect credentials" });
+  const token: string = createToken(email);
+  await updateToken(email, token);
+  return res.status(200).json({ access_token: token });
 };
 
-export const retrievedUserDetailController = async (req: Request, res: Response) => {
-    try {
-        const { email } = req.body;
-        console.log(email)
-        const details = await retrieveUser(email);
-        if(!details)
-            return res.json({"msg":"not found"});
-        return res.json({"msg":details})
-    } catch (error) {
-        console.error(error);
-        return res.status(404).send(error); 
-    }
-}
+export const updateUserController = async (req: Request, res: Response) => {
+  try {
+    const { name, email, avatar, new_password } = req.body;
+    await updateUser(email, name, avatar, new_password);
+    console.log("updated");
+    return res.json({ status: "success" });
+  } catch (error) {
+    return res.status(404).json({ details: "send full details" });
+  }
+};
 
+export const retrievedUserDetailController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const decoded_token = res.locals.user;
+    const email: string = decoded_token.email;
+    const details = await retrieveUser(email);
+    if (!details) return res.json({ msg: "not found" });
+    const userDetails = {
+        name: details.name,
+        email: details.email,
+        avatar: details.avatar,
+      };
+  
+      return res.json({ msg: userDetails });
+  } catch (error) {
+    console.error(error);
+    return res.status(404).send(error);
+  }
+};
