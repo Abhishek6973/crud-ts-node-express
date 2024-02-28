@@ -1,8 +1,8 @@
 import { User } from "../models/users";
 import bcrypt from 'bcrypt';
 
-export const createUser = async (name: string, email: string, avatar: string, token:string, password:string) => {
-    return await User.create({ email, name, avatar, token, password});
+export const createUser = async (name: string, email: string, avatar: string, token:string, password:string, status:string) => {
+    return await User.create({ email, name, avatar, token, password, status});
 };
 
 export const updateUser = async (email: string, newName: string, newAvatar: string, newPassword: string) => {

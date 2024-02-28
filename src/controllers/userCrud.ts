@@ -8,10 +8,12 @@ import {
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bycrpt from "bcrypt";
+import { validationResult } from 'express-validator';
+
 
 dotenv.config();
 
-const createToken = (email: string): string => {
+export const createToken = (email: string): string => {
   const secretToken = process.env.SECRET_KEY;
   if (!secretToken) {
     throw new Error("Secret token not found in environment variables");
@@ -23,12 +25,14 @@ const createToken = (email: string): string => {
 export const createUserController = async (req: Request, res: Response) => {
     try {
     const { name, email, avatar, password } = req.body;
-    console.log(name, email, avatar, password);
-
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: "enter valid email" });
+    }
     const hashedpassword: string = await bycrpt.hash(password, 2);
-
+    const setStatus = "Not Approved";
     const token: string = createToken(email);
-    await createUser(name, email, avatar, token, hashedpassword);
+    await createUser(name, email, avatar, token, hashedpassword, setStatus);
 
     console.log("User created successfully");
 

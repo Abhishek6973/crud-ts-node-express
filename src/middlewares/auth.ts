@@ -7,7 +7,6 @@ config()
 
 export const protectedRoute = (req:Request, res: Response, next:NextFunction) =>{
     const authHeader: string|undefined = req.headers.authorization
-
     if (!authHeader || !authHeader.startsWith('Bearer')) {
         return res.status(401).json({"status":"add token"})
     }
