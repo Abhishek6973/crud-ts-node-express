@@ -1,15 +1,10 @@
-# railway.yml
+# railway.toml
 
-services:
-  app:
-    image: node:16
+[services]
+  app = { image = "node:16" }
 
-build:
-  frontend:
-    commands:
-      - yarn install
-      - yarn build
+[build.frontend]
+  commands = ["yarn install", "yarn build"]
 
-start:
-  frontend:
-    command: yarn dev
+[start.frontend]
+  command = "yarn dev"
