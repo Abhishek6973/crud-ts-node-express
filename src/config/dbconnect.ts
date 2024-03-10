@@ -1,9 +1,10 @@
 import {connect } from 'mongoose';
-
+import { config } from "dotenv";
+config()
 
 
 export const connectiondb =()=>{
-    connect('mongodb+srv://abhishek86649:Abhi1033%40@cluster0.wpfpsg9.mongodb.net/test?retryWrites=true&w=majority').then(
+    connect(process.env.DB_URI??"mongodb://localhost:27017/test").then(
       ()=>{
        console.log(`connected to db`)
       }
