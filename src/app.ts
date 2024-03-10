@@ -18,7 +18,7 @@ app.use("/api/user", userRouter);
 app.use("/api/admin",AdminRouter);
 
 
-const port = 10000;
+const port = process.env.PORT ?? 3000;
 app.listen(port,
     ()=>{
         console.log("server started")
