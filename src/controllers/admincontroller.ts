@@ -42,7 +42,7 @@ export const adminlogincontroller = async (req: Request, res: Response)=>{
 export const userapprove = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email }: { email: string } = req.body; 
-        const userstatus: Document | null = await checkUpdateStatus(email); 
+        const userstatus = await checkUpdateStatus(email); 
         if (!userstatus)
             res.status(402).json({ "msg": "User Not found" });
         else

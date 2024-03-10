@@ -13,17 +13,18 @@ export const retriveAdmin= async (email:string) =>{
 export const tokenupdate = async(email : string , token: string) => {
     return await Admin.findOneAndUpdate({email:email},{ $set: { token: token } },{ new: true, upsert: true })
 }
-export const checkUpdateStatus = async (email: string): Promise<Document | null> => {
+export const checkUpdateStatus = async (email: string) => {
     try {
-        let user: Document | null = await User.findOne({ email: email });
+        let user = await User.findOne({ email: email });
         if (user) {
             user = await User.findOneAndUpdate(
                 { email: email },
                 { $set: { status: "approved" } },
                 { new: true, upsert: true }
             );
+            return user
         }
-        return user;
+        return [];
     } catch (error) {
         console.error("Error in checkUpdateStatus:", error);
         return null;
