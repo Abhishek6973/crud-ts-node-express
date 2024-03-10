@@ -12,4 +12,4 @@ build:
 
 start:
   frontend:
-    command: yarn start
+    command: yarn dev
